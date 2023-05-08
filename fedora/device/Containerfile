@@ -1,0 +1,34 @@
+FROM registry.fedoraproject.org/fedora:latest
+
+RUN dnf install -y dnf5 dnf5-plugins
+RUN dnf5 install -y dnf5 dnf5-plugins
+
+RUN dnf5 install -y tmux vim
+
+#RUN dnf5 group install -y --with-optional phosh-desktop
+RUN dnf install -y @phosh-desktop-environment
+
+RUN echo 'root:654321' | chpasswd 
+
+RUN groupadd -g 1000 unpriv && \
+  useradd -g 1000 -G wheel -m -u 1000 unpriv && \
+  echo 'unpriv:123456' | chpasswd
+
+RUN echo '/dev/mapper/sda17p2 / ext4 rw,relatime 0 0' > /etc/fstab
+
+RUN dnf5 install -y openssh-server && \
+  systemctl enable sshd
+
+RUN dnf5 remove -y 'plymouth*'
+
+RUN mkdir /tmp/rpms
+COPY *.rpm /tmp/rpms
+RUN cd /tmp/rpms && dnf5 install -y *.rpm
+RUN rm -rf /tmp/rpms
+
+RUN systemctl enable pd-mapper
+RUN systemctl enable qbootctl-mark-boot-successful.service
+
+
+ENTRYPOINT ["/bin/bash", "-l", "-i"]
+

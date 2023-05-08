@@ -1,0 +1,2 @@
+export IMAGE_NAME="fedora-aarch64-device.i"
+export CONTAINER_NAME="fedora-aarch64-device.c"

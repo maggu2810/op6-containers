@@ -1,0 +1,17 @@
+FROM registry.fedoraproject.org/fedora:latest
+
+RUN dnf install -y dnf5 dnf5-plugins
+RUN dnf5 install -y dnf5 dnf5-plugins
+
+RUN dnf5 install -y tmux vim
+
+RUN dnf5 install -y fedora-packager fedora-review
+
+RUN echo 'root:654321' | chpasswd 
+
+RUN groupadd -g 1000 unpriv && \
+  useradd -g 1000 -G wheel -m -u 1000 unpriv && \
+  echo 'unpriv:123456' | chpasswd
+
+ENTRYPOINT ["/bin/bash", "-l", "-i"]
+
