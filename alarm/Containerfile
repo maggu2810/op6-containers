@@ -1,0 +1,60 @@
+FROM localhost/alarm:latest
+
+RUN echo "oneplus6" > /etc/hostname
+
+RUN echo 'root:123456' | chpasswd 
+
+RUN ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
+
+RUN sed 's:^#en_US.UTF-8 UTF-8:en_US.UTF-8 UTF-8:g' -i /etc/locale.gen && \
+  locale-gen && \
+  echo 'LANG="en_US.UTF-8"' > /etc/locale.conf
+
+RUN pacman-key --init
+RUN pacman-key --populate archlinuxarm
+
+RUN pacman -R --noconfirm linux-aarch64
+
+RUN pacman -Syu --noconfirm
+
+RUN echo 'alarm:123456' | chpasswd 
+RUN usermod -aG wheel alarm
+
+RUN pacman -S --noconfirm --needed \
+  sudo
+RUN sed 's:^# %wheel ALL=(ALL\:ALL) ALL:%wheel ALL=(ALL\:ALL) ALL:g' -i /etc/sudoers
+
+RUN pacman -S --noconfirm --needed \
+  gnome-shell gdm \
+  networkmanager modemmanager \
+  pipewire pipewire-pulse wireplumber \
+  bluez bluez-utils gnome-control-center gnome-console \
+  linux-firmware-qcom \
+  gnome-software flatpak gnome-backgrounds \
+  bash-completion \
+  iio-sensor-proxy \
+  xdg-user-dirs xdg-desktop-portal-gnome
+
+RUN systemctl enable gdm NetworkManager ModemManager bluetooth sshd
+
+RUN pacman -S --noconfirm --needed \
+  qrtr rmtfs
+RUN systemctl enable qrtr-ns rmtfs
+
+RUN echo -n '' > /etc/profile.d/zzz-environment.sh && \
+  chmod 0755 /etc/profile.d/zzz-environment.sh && \
+  echo "export LD_LIBRARY_PATH=/usr/local/lib" >> /etc/profile.d/zzz-environment.sh && \
+  echo "export PKG_CONFIG_LIBDIR=/usr/local/lib/pkgconfig:/usr/local/share/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig" >> /etc/profile.d/zzz-environment.sh
+
+RUN pacman -S --noconfirm --needed \
+  gdm \
+  git ccache meson base-devel \
+  xorg-server-xvfb sysprof asciidoc \
+  wayland-protocols gobject-introspection \
+  evolution-data-server sassc itstool \
+  cmake \
+  rsync cpio
+
+RUN git config --system user.email "you@example.com" && \
+  git config --system user.name "Your Name"
+
