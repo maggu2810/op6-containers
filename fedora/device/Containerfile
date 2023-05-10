@@ -21,14 +21,31 @@ RUN dnf5 install -y openssh-server && \
 
 RUN dnf5 remove -y 'plymouth*'
 
-RUN mkdir /tmp/rpms
-COPY *.rpm /tmp/rpms
-RUN cd /tmp/rpms && dnf5 install -y *.rpm
-RUN rm -rf /tmp/rpms
+RUN dnf copr enable -y maggu2810/op6
 
+RUN dnf5 install -y pd-mapper
 RUN systemctl enable pd-mapper
+
+RUN dnf5 install -y qbootctl
 RUN systemctl enable qbootctl-mark-boot-successful.service
 
+# pmbootstrap init: edge, for enchilada with user interface none
+# pmbootstrap install
+# pmbootstrap export
+# install android-tools for simg2img
+# simg2img /tmp/postmarketOS-export/oneplus-enchilada.img oneplus-enchilada.img
+# export IMG_PATH="${PWD}/oneplus-enchilada.img"
+# mkdir root
+# sudo mount /dev/loop0p2 root
+# sudo mount /dev/loop0p1 root/boot
+# sudo tar czpf oneplus-enchilada.tgz -C root/ .
+# sudo umount root/boot root/
+# rmdir root
+# rm oneplus-enchilada.img
+COPY oneplus-enchilada.tgz /tmp/
+RUN mkdir /pmos
+RUN tar xzpf /tmp/oneplus-enchilada.tgz -C /pmos
+RUN rm /tmp/oneplus-enchilada.tgz
 
 ENTRYPOINT ["/bin/bash", "-l", "-i"]
 
