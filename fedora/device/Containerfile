@@ -29,6 +29,7 @@ RUN systemctl enable pd-mapper
 RUN dnf5 install -y qbootctl
 RUN systemctl enable qbootctl-mark-boot-successful.service
 
+# DOWNLOAD FILE: https://github.com/maggu2810/op6-containers/releases/download/oneplus-enchilada-pmos-ui-none/oneplus-enchilada-pmos-ui-none.tgz
 # pmbootstrap init: edge, for enchilada with user interface none
 # pmbootstrap install
 # pmbootstrap export
@@ -42,10 +43,19 @@ RUN systemctl enable qbootctl-mark-boot-successful.service
 # sudo umount root/boot root/
 # rmdir root
 # rm oneplus-enchilada.img
-COPY oneplus-enchilada.tgz /tmp/
+COPY oneplus-enchilada-pmos-ui-none.tgz /tmp/
 RUN mkdir /pmos
-RUN tar xzpf /tmp/oneplus-enchilada.tgz -C /pmos
-RUN rm /tmp/oneplus-enchilada.tgz
+RUN tar xzpf /tmp/oneplus-enchilada-pmos-ui-none.tgz -C /pmos
+RUN rm /tmp/oneplus-enchilada-pmos-ui-none.tgz
+
+
+# MOVE UP - SOME TIME
+RUN dnf5 install -y 'dnf-command(copr)'
+
+
+COPY pmos-get-kernel-modules-fimware /usr/local/bin/pmos-get-kernel-modules-fimware
+RUN chown 0:0 /usr/local/bin/pmos-get-kernel-modules-fimware && \
+    chmod 0755 /usr/local/bin/pmos-get-kernel-modules-fimware
 
 ENTRYPOINT ["/bin/bash", "-l", "-i"]
 

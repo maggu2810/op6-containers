@@ -1,0 +1,10 @@
+€!/bin/sh
+
+for MP in /dev /proc /sys; do
+  mount -t bind ${MP} /pmos${MP}
+done
+chroot /pmos /sbin/pmos-update-kernel
+for MP in /dev /proc /sys; do
+  umount /pmos${MP}
+done
+
