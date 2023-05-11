@@ -1,0 +1,8 @@
+#!/bin/sh
+
+dnf upgrade --refresh
+pmos-apk-update
+pmos-apk-upgrade
+#pmos-update-kernel
+pmos-adopt-and-integrate
+

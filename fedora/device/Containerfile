@@ -29,33 +29,30 @@ RUN systemctl enable pd-mapper
 RUN dnf5 install -y qbootctl
 RUN systemctl enable qbootctl-mark-boot-successful.service
 
-# DOWNLOAD FILE: https://github.com/maggu2810/op6-containers/releases/download/oneplus-enchilada-pmos-ui-none/oneplus-enchilada-pmos-ui-none.tgz
-# pmbootstrap init: edge, for enchilada with user interface none
-# pmbootstrap install
-# pmbootstrap export
-# install android-tools for simg2img
-# simg2img /tmp/postmarketOS-export/oneplus-enchilada.img oneplus-enchilada.img
-# export IMG_PATH="${PWD}/oneplus-enchilada.img"
-# mkdir root
-# sudo mount /dev/loop0p2 root
-# sudo mount /dev/loop0p1 root/boot
-# sudo tar czpf oneplus-enchilada.tgz -C root/ .
-# sudo umount root/boot root/
-# rmdir root
-# rm oneplus-enchilada.img
-COPY oneplus-enchilada-pmos-ui-none.tgz /tmp/
-RUN mkdir /pmos
-RUN tar xzpf /tmp/oneplus-enchilada-pmos-ui-none.tgz -C /pmos
-RUN rm /tmp/oneplus-enchilada-pmos-ui-none.tgz
-
-
 # MOVE UP - SOME TIME
 RUN dnf5 install -y 'dnf-command(copr)'
 
+RUN curl -L -o /tmp/oneplus-enchilada-pmos-ui-none.tgz https://github.com/maggu2810/op6-containers/releases/download/oneplus-enchilada-pmos-ui-none/oneplus-enchilada-pmos-ui-none.tgz && \
+  mkdir /pmos && \
+  tar xzpf /tmp/oneplus-enchilada-pmos-ui-none.tgz -C /pmos && \
+  rm /tmp/oneplus-enchilada-pmos-ui-none.tgz
 
-COPY pmos-get-kernel-modules-fimware /usr/local/bin/pmos-get-kernel-modules-fimware
-RUN chown 0:0 /usr/local/bin/pmos-get-kernel-modules-fimware && \
-    chmod 0755 /usr/local/bin/pmos-get-kernel-modules-fimware
+RUN dnf install --refresh -y tqftpserv
+RUN systemctl enable tqftpserv
+
+RUN dnf install -y rmtfs
+RUN systemctl enable rmtfs
+
+COPY pmos-adopt-and-integrate /usr/local/bin/pmos-adopt-and-integrate
+COPY pmos-apk-update /usr/local/bin/pmos-apk-update
+COPY pmos-apk-upgrade /usr/local/bin/pmos-apk-upgrade
+COPY pmos-update-kernel /usr/local/bin/pmos-update-kernel
+COPY update-all /usr/local/bin/update-all
+RUN for i in pmos-adopt-and-integrate pmos-apk-update pmos-apk-upgrade pmos-update-kernel update-all; do chown 0:0 "/usr/local/bin/${i}"; chmod 0755 "/usr/local/bin/${i}"; done
+
+RUN /usr/local/bin/pmos-adopt-and-integrate
+
+RUN echo 'oneplus6' > /etc/hostname
 
 ENTRYPOINT ["/bin/bash", "-l", "-i"]
 
