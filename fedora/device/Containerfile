@@ -1,25 +1,20 @@
 FROM registry.fedoraproject.org/fedora:latest
 
+RUN dnf upgrade -y --refresh
 RUN dnf install -y dnf5 dnf5-plugins
-RUN dnf5 install -y dnf5 dnf5-plugins
 
-RUN dnf5 install -y tmux vim
+RUN dnf5 install -y \
+  'dnf-command(copr)' \
+  tmux vim
 
-#RUN dnf5 group install -y --with-optional phosh-desktop
-RUN dnf install -y @phosh-desktop-environment
-
-RUN echo 'root:654321' | chpasswd 
-
-RUN groupadd -g 1000 unpriv && \
-  useradd -g 1000 -G wheel -m -u 1000 unpriv && \
-  echo 'unpriv:123456' | chpasswd
+RUN dnf5 remove -y 'plymouth*'
 
 RUN echo '/dev/mapper/sda17p2 / ext4 rw,relatime 0 0' > /etc/fstab
 
+RUN echo 'oneplus6' > /etc/hostname
+
 RUN dnf5 install -y openssh-server && \
   systemctl enable sshd
-
-RUN dnf5 remove -y 'plymouth*'
 
 RUN dnf copr enable -y maggu2810/op6
 
@@ -29,19 +24,16 @@ RUN systemctl enable pd-mapper
 RUN dnf5 install -y qbootctl
 RUN systemctl enable qbootctl-mark-boot-successful.service
 
-# MOVE UP - SOME TIME
-RUN dnf5 install -y 'dnf-command(copr)'
-
-RUN curl -L -o /tmp/oneplus-enchilada-pmos-ui-none.tgz https://github.com/maggu2810/op6-containers/releases/download/oneplus-enchilada-pmos-ui-none/oneplus-enchilada-pmos-ui-none.tgz && \
-  mkdir /pmos && \
-  tar xzpf /tmp/oneplus-enchilada-pmos-ui-none.tgz -C /pmos && \
-  rm /tmp/oneplus-enchilada-pmos-ui-none.tgz
-
 RUN dnf install --refresh -y tqftpserv
 RUN systemctl enable tqftpserv
 
 RUN dnf install -y rmtfs
 RUN systemctl enable rmtfs
+
+RUN curl -L -o /tmp/oneplus-enchilada-pmos-ui-none.tgz https://github.com/maggu2810/op6-containers/releases/download/oneplus-enchilada-pmos-ui-none/oneplus-enchilada-pmos-ui-none.tgz && \
+  mkdir /pmos && \
+  tar xzpf /tmp/oneplus-enchilada-pmos-ui-none.tgz -C /pmos && \
+  rm /tmp/oneplus-enchilada-pmos-ui-none.tgz
 
 COPY pmos-adopt-and-integrate /usr/local/bin/pmos-adopt-and-integrate
 COPY pmos-apk-update /usr/local/bin/pmos-apk-update
@@ -52,7 +44,14 @@ RUN for i in pmos-adopt-and-integrate pmos-apk-update pmos-apk-upgrade pmos-upda
 
 RUN /usr/local/bin/pmos-adopt-and-integrate
 
-RUN echo 'oneplus6' > /etc/hostname
+RUN echo 'root:654321' | chpasswd 
+
+RUN groupadd -g 1000 unpriv && \
+  useradd -g 1000 -G wheel -m -u 1000 unpriv && \
+  echo 'unpriv:123456' | chpasswd
+
+#RUN dnf5 group install -y --with-optional phosh-desktop
+RUN dnf install -y @phosh-desktop-environment
 
 ENTRYPOINT ["/bin/bash", "-l", "-i"]
 
