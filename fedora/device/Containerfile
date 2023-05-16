@@ -24,10 +24,10 @@ RUN systemctl enable pd-mapper
 RUN dnf5 install -y qbootctl
 RUN systemctl enable qbootctl-mark-boot-successful.service
 
-RUN dnf install --refresh -y tqftpserv
+RUN dnf5 install -y tqftpserv
 RUN systemctl enable tqftpserv
 
-RUN dnf install -y rmtfs
+RUN dnf5 install -y rmtfs
 RUN systemctl enable rmtfs
 
 RUN curl -L -o /tmp/oneplus-enchilada-pmos-ui-none.tgz https://github.com/maggu2810/op6-containers/releases/download/oneplus-enchilada-pmos-ui-none/oneplus-enchilada-pmos-ui-none.tgz && \
