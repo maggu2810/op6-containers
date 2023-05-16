@@ -1,2 +1,0 @@
-export IMAGE_NAME="fedora-aarch64-host-dev.i"
-export CONTAINER_NAME="fedora-aarch64-hosts-dev.c"

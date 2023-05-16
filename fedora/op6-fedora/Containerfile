@@ -50,8 +50,5 @@ RUN groupadd -g 1000 unpriv && \
   useradd -g 1000 -G wheel -m -u 1000 unpriv && \
   echo 'unpriv:123456' | chpasswd
 
-#RUN dnf5 group install -y --with-optional phosh-desktop
-RUN dnf install -y @phosh-desktop-environment
-
 ENTRYPOINT ["/bin/bash", "-l", "-i"]
 

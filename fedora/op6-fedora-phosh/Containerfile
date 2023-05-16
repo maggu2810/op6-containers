@@ -1,0 +1,7 @@
+FROM docker.io/maggu2810/op6-fedora:latest
+
+#RUN dnf5 group install -y --with-optional phosh-desktop
+RUN dnf install -y @phosh-desktop-environment
+
+ENTRYPOINT ["/bin/bash", "-l", "-i"]
+
