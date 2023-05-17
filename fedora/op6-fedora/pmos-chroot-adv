@@ -3,7 +3,7 @@
 for MP in /dev /proc /sys; do
   mount -o bind ${MP} /pmos${MP}
 done
-chroot /pmos /sbin/apk upgrade
+chroot /pmos /entrypoint-adv "${@}"
 for MP in /dev /proc /sys; do
   umount /pmos${MP}
 done

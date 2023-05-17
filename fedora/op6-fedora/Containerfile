@@ -39,12 +39,12 @@ RUN curl -L -o /tmp/oneplus-enchilada-pmos-ui-none.tgz https://github.com/maggu2
   tar xzpf /tmp/oneplus-enchilada-pmos-ui-none.tgz -C /pmos && \
   rm /tmp/oneplus-enchilada-pmos-ui-none.tgz
 
+COPY entrypoint-adv /pmos/entrypoint-adv
+RUN chown 0:0 /pmos/entrypoint-adv && chmod 0755 /pmos/entrypoint-adv
 COPY pmos-adopt-and-integrate /usr/local/bin/pmos-adopt-and-integrate
-COPY pmos-apk-update /usr/local/bin/pmos-apk-update
-COPY pmos-apk-upgrade /usr/local/bin/pmos-apk-upgrade
-COPY pmos-update-kernel /usr/local/bin/pmos-update-kernel
+COPY pmos-chroot-adv /usr/local/bin/pmos-chroot-adv
 COPY update-all /usr/local/bin/update-all
-RUN for i in pmos-adopt-and-integrate pmos-apk-update pmos-apk-upgrade pmos-update-kernel update-all; do chown 0:0 "/usr/local/bin/${i}"; chmod 0755 "/usr/local/bin/${i}"; done
+RUN for i in pmos-adopt-and-integrate pmos-chroot-adv update-all; do chown 0:0 "/usr/local/bin/${i}"; chmod 0755 "/usr/local/bin/${i}"; done
 
 RUN /usr/local/bin/pmos-adopt-and-integrate
 
