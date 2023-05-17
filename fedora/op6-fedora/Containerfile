@@ -4,6 +4,9 @@ RUN dnf upgrade -y --refresh
 RUN dnf install -y dnf5 dnf5-plugins
 
 RUN dnf5 install -y \
+  systemd-udev
+
+RUN dnf5 install -y \
   'dnf-command(copr)' \
   tmux vim
 
