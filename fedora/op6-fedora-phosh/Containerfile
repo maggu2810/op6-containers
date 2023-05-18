@@ -4,8 +4,10 @@ FROM docker.io/maggu2810/op6-fedora:latest
 RUN dnf install -y @phosh-desktop-environment
 
 RUN mkdir -p /var/lib/AccountsService/users/ && \
-    echo '[User]' > unpriv && \
-    echo 'Session=phosh' >> unpriv
+    echo '[User]' > /var/lib/AccountsService/users/unpriv && \
+    echo 'Session=phosh' >> /var/lib/AccountsService/users/unpriv && \
+    echo 'Icon=/home/unpriv/.face' >> /var/lib/AccountsService/users/unpriv && \
+    echo 'SystemAccount=false' >> /var/lib/AccountsService/users/unpriv
 
 ENTRYPOINT ["/bin/bash", "-l", "-i"]
 
