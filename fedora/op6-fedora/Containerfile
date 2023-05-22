@@ -22,31 +22,15 @@ RUN dnf5 install -y openssh-server && \
 
 RUN dnf copr enable -y maggu2810/op6
 
-RUN dnf5 install -y pd-mapper
+RUN dnf5 install -y device-oneplus-enchilada
+
 RUN systemctl enable pd-mapper
-
-RUN dnf5 install -y qbootctl
 RUN systemctl enable qbootctl-mark-boot-successful.service
-
-RUN dnf5 install -y tqftpserv
 RUN systemctl enable tqftpserv
-
-RUN dnf5 install -y rmtfs
 RUN systemctl enable rmtfs
 
-RUN curl -L -o /tmp/oneplus-enchilada-pmos-ui-none.tgz https://github.com/maggu2810/op6-containers/releases/download/oneplus-enchilada-pmos-ui-none/oneplus-enchilada-pmos-ui-none.tgz && \
-  mkdir /pmos && \
-  tar xzpf /tmp/oneplus-enchilada-pmos-ui-none.tgz -C /pmos && \
-  rm /tmp/oneplus-enchilada-pmos-ui-none.tgz
-
-COPY entrypoint-adv /pmos/entrypoint-adv
-RUN chown 0:0 /pmos/entrypoint-adv && chmod 0755 /pmos/entrypoint-adv
-COPY pmos-adopt-and-integrate /usr/local/bin/pmos-adopt-and-integrate
-COPY pmos-chroot-adv /usr/local/bin/pmos-chroot-adv
-COPY update-all /usr/local/bin/update-all
-RUN for i in pmos-adopt-and-integrate pmos-chroot-adv update-all; do chown 0:0 "/usr/local/bin/${i}"; chmod 0755 "/usr/local/bin/${i}"; done
-
-RUN /usr/local/bin/pmos-adopt-and-integrate
+RUN /usr/bin/pmos-chroot-setup
+RUN /usr/bin/pmos-adopt-and-integrate
 
 RUN echo 'root:654321' | chpasswd 
 
