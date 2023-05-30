@@ -13,9 +13,10 @@ RUN dnf5 install -y \
 
 RUN dnf5 remove -y 'plymouth*'
 
-RUN echo '/dev/mapper/sda17p2 / ext4 rw,relatime 0 0' > /etc/fstab
+COPY fstab /etc/fstab
+RUN install -d -o 0 -g 0 -m 0755 /sda17p2
 
-RUN echo 'oneplus6' > /etc/hostname
+COPY hostname /etc/hostname
 
 RUN dnf5 install -y openssh-server && \
   systemctl enable sshd

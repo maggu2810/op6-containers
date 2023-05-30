@@ -1,6 +1,0 @@
-#!/bin/sh
-
-cp -ax /pmos/boot/ /
-cp -ax /pmos/lib/modules/ /lib/
-cp -ax /pmos/lib/firmware/ /lib/
-cp -ax /pmos/usr/share/alsa/ucm2/ /usr/share/alsa/
