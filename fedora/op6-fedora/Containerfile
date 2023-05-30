@@ -1,5 +1,7 @@
 FROM registry.fedoraproject.org/fedora:latest
 
+RUN echo "trigger rebuild 2023-05-30 21:44:00"
+
 RUN dnf upgrade -y --refresh
 RUN dnf install -y dnf5 dnf5-plugins
 
@@ -7,19 +9,18 @@ RUN dnf5 install -y \
   systemd \
   systemd-udev
 
+RUN dnf5 install -y openssh-server && \
+  systemctl enable sshd
+
 RUN dnf5 install -y \
   'dnf-command(copr)' \
-  tmux vim
+  tmux vim \
+  btrfs-progs \
+  iproute NetworkManager-tui NetworkManager-wifi wpa_supplicant
 
 RUN dnf5 remove -y 'plymouth*'
 
-COPY fstab /etc/fstab
-RUN install -d -o 0 -g 0 -m 0755 /sda17p2
-
 COPY hostname /etc/hostname
-
-RUN dnf5 install -y openssh-server && \
-  systemctl enable sshd
 
 RUN dnf copr enable -y maggu2810/op6
 
@@ -29,9 +30,6 @@ RUN systemctl enable pd-mapper
 RUN systemctl enable qbootctl-mark-boot-successful.service
 RUN systemctl enable tqftpserv
 RUN systemctl enable rmtfs
-
-RUN /usr/bin/pmos-chroot-setup
-RUN /usr/bin/pmos-adopt-and-integrate
 
 RUN echo 'root:654321' | chpasswd 
 
